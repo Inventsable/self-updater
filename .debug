@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionList>
+    <Extension Id="com.self-updater.panel">
+        <HostList>
+            <Host Name="ILST" Port="1164" />
+            <Host Name="AEFT" Port="1165" />
+            <Host Name="PHXS" Port="1166" />
+        </HostList>
+    </Extension>
+</ExtensionList>
