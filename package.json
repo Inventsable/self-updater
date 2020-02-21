@@ -1,21 +1,21 @@
 {
   "name": "self-updater",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "sign": "bombino-cmd sign",
-    "switch": "bombino-cmd switch",
-    "update": "bombino-cmd update",
-    "register": "bombino-cmd register",
-    "help": "bombino-cmd help"
+    "sign": "node ./lib/sign.js",
+    "switch": "node ./lib/switch.js",
+    "update": "node ./lib/update.js",
+    "register": "node ./lib/register.js",
+    "help": "node ./lib/help.js"
   },
   "dependencies": {
     "cep-spy": "^1.1.11",
     "core-js": "^3.1.2",
-    "starlette": "^1.0.0",
+    "starlette": "^1.0.1",
     "vue": "^2.6.10"
   },
   "devDependencies": {
@@ -23,7 +23,7 @@
     "@vue/cli-plugin-eslint": "^4.0.0",
     "@vue/cli-service": "^4.0.0",
     "babel-eslint": "^10.0.1",
-    "bombino-commands": "^1.0.1",
+    "bombino-commands": "^1.0.12",
     "boxen": "^4.1.0",
     "chalk": "^2.4.2",
     "eslint": "^5.16.0",

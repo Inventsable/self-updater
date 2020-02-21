@@ -20,13 +20,9 @@ export default {
 			type: Boolean,
 			default: false
     },
-    update: {
-      type: Boolean,
-      default: false,
-    },
-    git: {
+    gitUpdate: {
       type: String,
-      default: ''
+      default: '',
     },
 		context: {
 			type: Array,
@@ -84,6 +80,7 @@ export default {
         enabled: false,
         checkable: false,
 				checked: false,
+				callback: null
       }
 		};
 	},
@@ -109,11 +106,10 @@ export default {
 		}
 	},
 	async mounted() {
-
 		if (window.__adobe_cep__) {
-      
+			if (this.gitUpdate) await this.checkGitForUpdate()
       await this.init();
-    } 
+		}
 	},
 	methods: {
 		buildMenu(type) {
@@ -128,8 +124,8 @@ export default {
 				menu.push({ label: "---" });
 			if (this.refresh) menu.push(this.refreshItem);
       if (this.debug) menu.push(this.debugItem);
-      if (this.update && this.git.length)
-        menu.push(this.isOutdated ? this.menuItem : this.noUpdateItem)
+      if (this.gitUpdate.length)
+        menu.push(this.outdated ? this.updateItem : this.noUpdateItem)
 			const capitalized = type.replace(/^\w/, c => c.toUpperCase());
 			this[`real${capitalized}`].menu = menu;
 			this[`set${capitalized}Menu`]();
@@ -247,10 +243,11 @@ export default {
 			spy.launchLocalhost();
     },
     async checkGitForUpdate() {
-      if (this.update && this.git.length) {
-        return this.outdated = this.compareVersions(
+      if (this.gitUpdate.length) {
+        this.outdated = this.compareVersions(
           JSON.parse(await this.grabRepoRaw(this.repo)).version
-        );
+				);
+				console.log(this.outdated)
       }
     },
 		init() {
@@ -265,39 +262,37 @@ export default {
 				this.$emit("flyoutBlur")
       );
     },
-    // UPDATE VIA OWN GITHUB REPO
-    async grabRepoRaw(repo, file) {
+    // Fetch the raw text file from github (same as file accessed via Raw button)
+    async grabRepoRaw() {
       let data = await fetch(
-        `https://raw.githubusercontent.com/${this.git}/master/package.json`
+        `https://raw.githubusercontent.com/${this.gitUpdate}/master/package.json`
       ).catch(err => {
         console.err(err);
       });
       return data.text();
-    },
+		},
+		// Take the x.x.x version of each, use split to turn them into arrays, and compare semantic sections
     compareVersions(newest) {
       this.webVersion = newest;
-      let web = newest.split("."), offline = spy.extVersion.split("."), isOutdated = false;
+			let web = newest.split("."), offline = spy.extVersion.split("."), isOutdated = false;
       web.forEach((v, i) => {
         if (Number(web[i]) > Number(offline[i])) isOutdated = true;
       });
       return isOutdated;
-    },
+		},
+		// This currently opens the link in the default browser, then shuts off the tab once download is complete.
+		// It would be much smoother to offer a direct download via link
     async downloadNewestZXP() {
       let target = `${spy.extName}_${this.webVersion}.zxp`
       if (!window.__adobe_cep__) {
-        let version = JSON.parse(
-          await this.grabRepoRaw("Inventsable/Lunch-Mama")
-        ).version;
         spy.launchInNewTab(
-          `https://github.com/${this.git}/raw/master/archive/${target}`
+          `https://github.com/${this.gitUpdate}/raw/master/archive/${target}`
         );
       } else {
         cep.util.openURLInDefaultBrowser(
-          `https://github.com/${this.git}/raw/master/archive/${target}`
+          `https://github.com/${this.gitUpdate}/raw/master/archive/${target}`
         );
       }
-      // this.$emit("promptUpdate");
-      // this.hasDownloaded = true;
     }
 	}
 };

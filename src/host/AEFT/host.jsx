@@ -1,1 +1,1 @@
-console.log('Host is online');
+// alert('AEFT script online')
